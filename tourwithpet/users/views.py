@@ -48,15 +48,42 @@ class UnFollowUser(APIView):
 
         
 class UserProfile(APIView):
-    def get(self,request,username,format=None):
-        print("user profiles")
+
+    def get_user(self,username):
         try:
             found_user = models.User.objects.get(username=username)
+            return found_user
         except models.User.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return None
 
+    def get(self,request,username,format=None):
+
+        found_user = self.get_user(username)
+        if found_user is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+            
         serializer = serializers.UserProfileSerializer(found_user)
         return Response(data = serializer.data, status=status.HTTP_200_OK)
+
+    def put(self,request,username,format=None):
+        user = request.user
+
+        found_user = self.get_user(username)
+        if found_user is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        elif found_user.username != user.username:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            serializer = serializers.UserProfileSerializer(found_user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(data = serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(data = serializer.errors, status=status.HTTP_404_NOT_FOUND)
+                
+
+            
+
 
 
 class UserFollowers(APIView):
@@ -100,57 +127,32 @@ class Search(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
             
 
+class ChangePassword(APIView):
 
-# from django.contrib.aut
-# h import get_user_model
-# from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.urls import reverse
-# from django.views.generic import DetailView, ListView, RedirectView, UpdateView
+    def put(self, request, username,format=None):
 
-# User = get_user_model()
+        user = request.user
 
+        if user.username !=username:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-# class UserDetailView(LoginRequiredMixin, DetailView):
+        current_password = request.data.get("current_password", None)
+        if current_password is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-#     model = User
-#     slug_field = "username"
-#     slug_url_kwarg = "username"
+        password_match = user.check_password(current_password)
+        if password_match is False:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+        new_password = request.data.get("new_password", None)
+        if new_password is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            user.set_password(new_password)
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+             
 
-# user_detail_view = UserDetailView.as_view()
-
-
-# class UserListView(LoginRequiredMixin, ListView):
-
-#     model = User
-#     slug_field = "username"
-#     slug_url_kwarg = "username"
-
-
-# user_list_view = UserListView.as_view()
-
-
-# class UserUpdateView(LoginRequiredMixin, UpdateView):
-
-#     model = User
-#     fields = ["name"]
-
-#     def get_success_url(self):
-#         return reverse("users:detail", kwargs={"username": self.request.user.username})
-
-#     def get_object(self):
-#         return User.objects.get(username=self.request.user.username)
-
-
-# user_update_view = UserUpdateView.as_view()
-
-
-# class UserRedirectView(LoginRequiredMixin, RedirectView):
-
-#     permanent = False
-
-#     def get_redirect_url(self):
-#         return reverse("users:detail", kwargs={"username": self.request.user.username})
-
-
-# user_redirect_view = UserRedirectView.as_view()
+            
+            
+             

@@ -154,10 +154,6 @@ class ModerateComment(APIView):
         # except models.Image.DoesNotExist:
         #     return Response(status=status.HTTP_404_NOT_FOUND)
         
-        print(user)
-        print(image_id)
-        print(comment_id)
-
         try:
             comment_to_delete = models.Comment.objects.get(
                 id=comment_id, image__id=image_id, image__creator=user)
@@ -192,10 +188,9 @@ class ImageDetail(APIView):
         return Response(data = serializer.data , status=status.HTTP_200_OK)            
 
     
-    def put(self,request,image_id,fromat=None):
+    def put(self,request,image_id,format=None):
 
         user = request.user
-
         image = self.find_own_image(image_id,user) 
 
         if image is None:
@@ -209,39 +204,17 @@ class ImageDetail(APIView):
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    
+    def delete(self,request,image_id,format=None):
 
-# def get_key(image):
-#     return image.created_at
-# class ListAllImages(APIView):
+        user = request.user
+        image = self.find_own_image(image_id,user) 
 
-#     def get(self,request,format=None):
+        if image is None:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-#         all_images = models.Image.objects.all()
+        image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-#         serializer = serializers.ImageSerializer(all_images, many=True)
-
-#         return Response(data=serializer.data)
         
-
-# class ListAllComments(APIView):
-
-#     def get(self,request, fromat=None):
-
-#         all_comments = models.Comment.objects.all()
-
-#         serializer = serializers.CommentSerializer(all_comments, many=True)
-
-#         return Response(data=serializer.data)
-
-
-
-
-# class ListAllLikes(APIView):
-
-#     def get(self,request, fromat=None):
-
-#         all_likes = models.Like.objects.all()
-
-#         serializer = serializers.LikeSerializer(all_likes, many=True)
-
-#         return Response(data=serializer.data)
+        
