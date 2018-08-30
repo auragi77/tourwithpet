@@ -68,11 +68,14 @@ THIRD_PARTY_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'rest_framework',
+    'taggit',
+    'taggit_serializer',
 ]
 LOCAL_APPS = [
     'tourwithpet.users.apps.UsersAppConfig',
     # Your stuff: custom apps go here
     'tourwithpet.images.apps.ImagesConfig',
+    'tourwithpet.notifications.apps.NotificationsConfig'
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -239,3 +242,5 @@ SOCIALACCOUNT_ADAPTER = 'tourwithpet.users.adapters.SocialAccountAdapter'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+TAGGIT_CASE_INSENSITIVE = True
