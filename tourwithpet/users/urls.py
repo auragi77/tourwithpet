@@ -16,21 +16,7 @@ urlpatterns =[
     path("<str:username>/followers/", view=views.UserFollowers.as_view(), name="user_followers"),
     path("<str:username>/following/", view=views.UserFollowing.as_view(), name="user_following"),
     path("<str:username>/password/", view=views.ChangePassword.as_view(), name="change_password"),
+    path("login/facebook/", view=views.FacebookLogin.as_view(), name="fb_login"),
+    # path("login/google/", view=views.GoogleLogin.as_view(), name="google_login"),
 ]
 
-# from django.urls import path
-
-# from tourwithpet.users.views import (
-#     user_list_view,
-#     user_redirect_view,
-#     user_update_view,
-#     user_detail_view,
-# )
-
-# app_name = "users"
-# urlpatterns = [
-#     path("", view=user_list_view, name="list"),
-#     path("~redirect/", view=user_redirect_view, name="redirect"),
-#     path("~update/", view=user_update_view, name="update"),
-#     path("<str:username>/", view=user_detail_view, name="detail"),
-# ]

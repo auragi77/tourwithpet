@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from . import models, serializers
 from tourwithpet.notifications import views as notification_view
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+# from allauth.socialaccount.providers.facebook.views import GoogleOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
 
 
 class ExploreUser(APIView):
@@ -153,6 +156,12 @@ class ChangePassword(APIView):
             return Response(status=status.HTTP_200_OK)
              
 
-            
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
+
+# class GoogleLogin(SocialLoginView):
+#     adapter_class = GoogleOAuth2Adapter
             
              
